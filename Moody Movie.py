@@ -2,16 +2,23 @@ from bs4 import BeautifulSoup as SOUP
 import re
 import requests as HTTP
 from tkinter import *
+from PIL import Image,ImageTk
 from pymsgbox import *
 
-win = Tk()
-win.geometry("400x400")
-win.title("Moody Movie")
 
 def note():
     alert(title="Moody Movie Info",text="sad-drama\nDisgust-Musical\nAnger-Family\nAnticipation-Thriller\nFear-Sport\nEnjoyment-Thriller\nTrust-Western\nSurprise- Film-Noir",button='OK')
     return True
 
+def toggle(tog=[0]):
+    tog[0]= not tog[0]
+    if tog[0]:
+        win.configure(bg='gray')
+    else:
+        win.configure(bg='white')
+    return True
+
+    
 def main(emotion):
     
     # IMDb Url for Drama genre of 
@@ -71,12 +78,17 @@ def main(emotion):
 
 if __name__ == '__main__':
     #emotion = input("Enter the emotion: ")
-    Label(win, text="Welcome to\n Moody Movie", font =("Times", 20, "bold")).pack()
+    win = Tk()
+    win.iconbitmap("Moody Movie.ico")
+    win.geometry("400x400")
+    win.title("Moody Movie")
+    label1=Label(win, text="Welcome to\n Moody Movie",fg='blue', font =("Times", 20, "bold")).pack()
     data = StringVar(win)
     data.set("Click on info button for Mood Specification")
-    Label(win, text = "How's Your Mood Today?",font =("Times", 14)).pack()
+    label2=Label(win, text = "How's Your Mood Today?",fg='blue',font =("Times", 14)).pack()
     emotion= Entry(win, textvariable=data, width=50).pack()
-    button2=Button(win, text="Info", command=note).pack()
+    button2=Button(win, text="Info",width=12, command=note).pack()
+    t_btn=tk.Button(win, text="Theme",width=12, command=toggle).pack()
     a = main(emotion)
     count = 0
     
@@ -105,5 +117,4 @@ if __name__ == '__main__':
             if(count > 11): 
                 break
             count+=1
-
-win.mainloop()
+    win.mainloop()
