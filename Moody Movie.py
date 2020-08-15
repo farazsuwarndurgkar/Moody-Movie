@@ -1,13 +1,22 @@
-from bs4 import BeautifulSoup as SOUP
-import re
-import requests as HTTP
+import imdb
 from tkinter import *
-from PIL import Image,ImageTk
-from pymsgbox import *
+from tkinter.messagebox import showinfo
+from PIL import Image, ImageTk
+from pygame import mixer
 
+win = Tk()
+win.iconbitmap("Moody Movie.ico")
+win.geometry("270x480")
+win.title("Moody Movie")
+win.configure(bg='lavender')
 
 def note():
-    alert(title="Moody Movie Info",text="sad-drama\nDisgust-Musical\nAnger-Family\nAnticipation-Thriller\nFear-Sport\nEnjoyment-Thriller\nTrust-Western\nSurprise- Film-Noir",button='OK')
+    showinfo("Moody Movie Info","sad-drama\nDisgust-Musical\nAnger-Family\nAnticipation-Thriller\nFear-Sport\nEnjoyment-Thriller\nTrust-Western\nSurprise- Film-Noir")
+    #alert(title="Moody Movie Info",text="sad-drama\nDisgust-Musical\nAnger-Family\nAnticipation-Thriller\nFear-Sport\nEnjoyment-Thriller\nTrust-Western\nSurprise- Film-Noir",button='OK')
+    return True
+
+def clear():
+    data.set("")
     return True
 
 def toggle(tog=[0]):
@@ -15,106 +24,62 @@ def toggle(tog=[0]):
     if tog[0]:
         win.configure(bg='gray')
     else:
-        win.configure(bg='white')
+        win.configure(bg='lavender')
     return True
 
-    
-def main(emotion):
-    
-    # IMDb Url for Drama genre of 
-    # movie against emotion Sad 
-    if(emotion == "Sad"): 
-        urlhere = 'http://www.imdb.com/search/title?genres=drama&title_type=feature&sort=moviemeter, asc'
-  
-    # IMDb Url for Musical genre of 
-    # movie against emotion Disgust 
-    elif(emotion == "Disgust"): 
-        urlhere = 'http://www.imdb.com/search/title?genres=musical&title_type=feature&sort=moviemeter, asc'
-  
-    # IMDb Url for Family genre of 
-    # movie against emotion Anger 
-    elif(emotion == "Anger"): 
-        urlhere = 'http://www.imdb.com/search/title?genres=family&title_type=feature&sort=moviemeter, asc'
-  
-    # IMDb Url for Thriller genre of 
-    # movie against emotion Anticipation 
-    elif(emotion == "Anticipation"): 
-        urlhere = 'http://www.imdb.com/search/title?genres=thriller&title_type=feature&sort=moviemeter, asc'
-  
-    # IMDb Url for Sport genre of 
-    # movie against emotion Fear 
-    elif(emotion == "Fear"): 
-        urlhere = 'http://www.imdb.com/search/title?genres=sport&title_type=feature&sort=moviemeter, asc'
-  
-    # IMDb Url for Thriller genre of 
-    # movie against emotion Enjoyment 
-    elif(emotion == "Enjoyment"): 
-        urlhere = 'http://www.imdb.com/search/title?genres=thriller&title_type=feature&sort=moviemeter, asc'
-  
-    # IMDb Url for Western genre of 
-    # movie against emotion Trust 
-    elif(emotion == "Trust"): 
-        urlhere = 'http://www.imdb.com/search/title?genres=western&title_type=feature&sort=moviemeter, asc'
-  
-    # IMDb Url for Film_noir genre of 
-    # movie against emotion Surprise 
-    elif(emotion == "Surprise"): 
-        urlhere = 'http://www.imdb.com/search/title?genres=film_noir&title_type=feature&sort=moviemeter, asc'
-  
-    # HTTP request to get the data of 
-    # the whole page 
-    response = HTTP.get(urlhere) 
-    data = response.text 
-  
-    # Parsing the data using 
-    # BeautifulSoup 
-    soup = SOUP(data, "lxml") 
-  
-    # Extract movie titles from the 
-    # data using regex 
-    title = soup.find_all("a", attrs = {"href" : re.compile(r'\/title\/tt+\d*\/')})
-    Label(win, text=title).pack()
-    return title
+def movie():
+    ia = imdb.IMDb()
+    keyword = data.get()
+    result=[]
+    search = ia.get_keyword(keyword)
+    for i in range(5):
+        result.append(search[i])
+        #print(*result,sep="\n")
+        #showinfo("Moody Movie result",search[i])
+        #Label(win, text = search[i],font =("Times", 14)).grid()
+        #print(search[i])
+        print(result)
+    return True
 
-if __name__ == '__main__':
-    #emotion = input("Enter the emotion: ")
-    win = Tk()
-    win.iconbitmap("Moody Movie.ico")
-    win.geometry("400x400")
-    win.title("Moody Movie")
-    label1=Label(win, text="Welcome to\n Moody Movie",fg='blue', font =("Times", 20, "bold")).pack()
-    data = StringVar(win)
-    data.set("Click on info button for Mood Specification")
-    label2=Label(win, text = "How's Your Mood Today?",fg='blue',font =("Times", 14)).pack()
-    emotion= Entry(win, textvariable=data, width=50).pack()
-    button2=Button(win, text="Info",width=12, command=note).pack()
-    t_btn=tk.Button(win, text="Theme",width=12, command=toggle).pack()
-    a = main(emotion)
-    count = 0
+def music():
+    mixer.init()
+    file = 'lol.mp3'
+    mixer.music.load(file)
+    mixer.music.play()
+    running = True
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_p:
+                    mixer.music.pause()
+
+                if event.key == pygame.K_r:
+                    mixer.music.unpause()
+                if event.key == pygame.K_q:
+                    running = False
     
-    if(emotion == "Disgust" or emotion == "Anger"
-                           or emotion=="Surprise"): 
-  
-        for i in a: 
-  
-            # Splitting each line of the 
-            # IMDb data to scrape movies 
-            tmp = str(i).split('>;') 
-  
-            if(len(tmp) == 3): 
-                print(tmp[1][:-3]) 
-  
-            if(count > 13): 
-                break
-            count += 1
-    else: 
-        for i in a: 
-            tmp = str(i).split('>') 
-  
-            if(len(tmp) == 3): 
-                print(tmp[1][:-3]) 
-  
-            if(count > 11): 
-                break
-            count+=1
-    win.mainloop()
+
+def exit():
+    quit()
+
+open_img = Image.open("mm.jpg")
+render_img = ImageTk.PhotoImage(open_img)
+main_image = Label(win, image = render_img)
+main_image.image = render_img
+main_image.grid(row = 0, columnspan = 1)
+
+Label(win, text="Welcome to\n Moody Movie", bg='lavender', font =("Times", 20, "bold")).grid()
+data = StringVar(win)
+data.set("Enter Mood or Genre")
+Label(win, text = "How's Your Mood Today?",bg='lavender',font =("Times", 14, "bold")).grid(pady=10)
+entry1= Entry(win, textvariable=data,font =("Times", 11, "italic"), width=30).grid(padx=10)
+button1=Button(win, text="Search!",width=12,font =("Times", 11, "bold"), command=movie).grid(pady=10)
+button2=Button(win, text="Info",width=12,font =("Times", 11, "bold"), command=note).grid(pady=10)
+button3=Button(win, text="Clear",width=12,font =("Times", 11, "bold"), command=clear).grid(pady=10)
+button4=Button(win, text="Theme",width=12,font =("Times", 11, "bold"), command=toggle).grid(pady=10)
+button5=Button(win, text="Music",width=12,font =("Times", 11, "bold"), command=music).grid(pady=10)
+button6=Button(win, text="Exit",width=12,font =("Times", 11, "bold"), command=exit).grid(pady=10)
+
+win.mainloop()
